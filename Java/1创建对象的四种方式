@@ -1,0 +1,82 @@
+1.通过new直接创建
+2.反射机制
+Student student = (Student)Class.forName("com.package.Student").newInstance();　
+或者：Student student = Student.class.newInstance();
+使用Constructor类的newInstance方法
+Constructor<Student> constructor = Student.class.getInstance(); Student stu = constructor.newInstance();
+3.使用clone方法 需要implements Cloneable接口
+Student stu2 = <Student>stu.clone();
+
+Follow up
+clone为什么是protected的？
+主要是为了安全，若使用public修饰，那么所有子类都可以使用同一个clone
+默认的clone深拷贝变量，但浅拷贝对象的引用，这导致了一个问题。
+例如，Employee类有几个类成员，Staff是Employee的子类，Staff有不同的几个类成员，若使用public的clone，则会导致错误。
+所以子类应该重写自己的clone方法。
+
+如何重写clone方法？
+public Object clone() throws CloneNotSupportedException{
+    /*
+    新建对象，把字段全部复制。
+    对于类中的对象，要自己深拷贝
+    返回这个新建的对象
+    */
+    return (objectName);
+}
+
+4.使用序列化和反序列化
+序列化写入文件
+public class SerializeDemo
+{
+   public static void main(String [] args)
+   {
+      Employee e = new Employee();
+      e.name = "Reyan Ali";
+      e.address = "Phokka Kuan, Ambehta Peer";
+      e.SSN = 11122333;
+      e.number = 101;
+      try
+      {
+         FileOutputStream fileOut =
+         new FileOutputStream("/tmp/employee.ser");
+         ObjectOutputStream out = new ObjectOutputStream(fileOut);
+         out.writeObject(e);
+         out.close();
+         fileOut.close();
+         System.out.printf("Serialized data is saved in /tmp/employee.ser");
+      }catch(IOException i)
+      {
+          i.printStackTrace();
+      }
+   }
+}
+反序列化
+public class DeserializeDemo
+{
+   public static void main(String [] args)
+   {
+      Employee e = null;
+      try
+      {
+         FileInputStream fileIn = new FileInputStream("/tmp/employee.ser");
+         ObjectInputStream in = new ObjectInputStream(fileIn);
+         e = (Employee) in.readObject();
+         in.close();
+         fileIn.close();
+      }catch(IOException i)
+      {
+         i.printStackTrace();
+         return;
+      }catch(ClassNotFoundException c)
+      {
+         System.out.println("Employee class not found");
+         c.printStackTrace();
+         return;
+      }
+      System.out.println("Deserialized Employee...");
+      System.out.println("Name: " + e.name);
+      System.out.println("Address: " + e.address);
+      System.out.println("SSN: " + e.SSN);
+      System.out.println("Number: " + e.number);
+    }
+}
